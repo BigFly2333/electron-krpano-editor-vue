@@ -1,0 +1,391 @@
+﻿<krpano version="1.19" title="Virtual Tour2333">
+
+	<include url="skin/vtourskin.xml" />
+	<include url="skin/myHotspotStyle.xml" />
+	<!-- customize skin settings: maps, gyro, webvr, thumbnails, tooltips, layout, design, ... -->
+	<skin_settings maps="true"
+	               maps_type="google"
+	               maps_bing_api_key=""
+	               maps_google_api_key="AIzaSyBAWIp_XA9w7a1Qqt-6_Io-ZhyAlhZmbf8"
+	               maps_zoombuttons="false"
+	               gyro="true"
+	               webvr="true"
+	               webvr_gyro_keeplookingdirection="false"
+	               webvr_prev_next_hotspots="true"
+	               littleplanetintro="false"
+	               my_littleplanetintro="true"
+	               title="true"
+	               thumbs="true"
+	               thumbs_width="120" thumbs_height="80" thumbs_padding="10" thumbs_crop="0|40|240|160"
+	               thumbs_opened="true"
+	               thumbs_text="true"
+	               thumbs_dragging="true"
+	               thumbs_onhoverscrolling="false"
+	               thumbs_scrollbuttons="true"
+	               thumbs_scrollindicator="true"
+	               thumbs_loop="false"
+	               tooltips_buttons="false"
+	               tooltips_thumbs="false"
+	               tooltips_hotspots="false"
+	               tooltips_mapspots="false"
+	               deeplinking="false"
+	               loadscene_flags="MERGE"
+	               loadscene_blend="OPENBLEND(0.5, 0.0, 0.75, 0.05, linear)"
+	               loadscene_blend_prev="SLIDEBLEND(0.5, 180, 0.75, linear)"
+	               loadscene_blend_next="SLIDEBLEND(0.5,   0, 0.75, linear)"
+	               loadingtext="loading..."
+	               layout_width="100%"
+	               layout_maxwidth="814"
+	               controlbar_width="-24"
+	               controlbar_height="40"
+	               controlbar_offset="20"
+	               controlbar_offset_closed="-40"
+	               controlbar_overlap.no-fractionalscaling="10"
+	               controlbar_overlap.fractionalscaling="0"
+	               design_skin_images="vtourskin.png"
+	               design_bgcolor="0x2D3E50"
+	               design_bgalpha="0.8"
+	               design_bgborder="0"
+	               design_bgroundedge="1"
+	               design_bgshadow="0 4 10 0x000000 0.3"
+	               design_thumbborder_bgborder="3 0xFFFFFF 1.0"
+	               design_thumbborder_padding="2"
+	               design_thumbborder_bgroundedge="0"
+	               design_text_css="color:#FFFFFF; font-family:Arial;"
+	               design_text_shadow="1"
+	               />
+
+	<!--
+	    For an alternative skin design either change the <skin_settings> values 
+	    from above or optionally include one of the predefined designs from below.
+	-->
+	<!-- <include url="skin/vtourskin_design_flat_light.xml"  /> -->
+	<!-- <include url="skin/vtourskin_design_glass.xml"       /> -->
+	<!-- <include url="skin/vtourskin_design_ultra_light.xml" /> -->
+	<!-- <include url="skin/vtourskin_design_117.xml"         /> -->
+	<!-- <include url="skin/vtourskin_design_117round.xml"    /> -->
+	<!-- <include url="skin/vtourskin_design_black.xml"       /> -->
+
+	<!-- autorotate -->
+	<autorotate enabled="true"
+		waittime="2.0"
+		speed="5.0"
+		horizon="0.0"
+	/>
+
+	<events name="onautorotateevents" keep="true" onautorotateoneround="nextscene()"/>
+
+	<action name="nextscene">
+		autorotate.stop();wait(0);
+		set(ns, get(scene[get(xml.scene)].index));
+		set(maxs, get(scene.count));
+		add(ns,1);
+		if(ns == maxs, set(ns,0));
+		loadscene(get(scene[get(ns)].name), null, MERGE, BLEND(1.5));
+		autorotate.start();
+	</action>
+
+	<!-- startup action - load the first scene -->
+	<action name="startup" autorun="onstart">
+		if(startscene === null OR !scene[get(startscene)], copy(startscene,scene[0].name); );
+		loadscene(get(startscene), null, MERGE);
+		<!-- if(startactions !== null, startactions() ); -->
+		if(startactions !== null AND skin_settings.my_littleplanetintro == false, startactions(););
+		<!-- playsound(bgsnd, 'guitar.mp3', 0) -->
+	</action>
+
+	<action name="do_crop_animation" scope="local" args="framewidth, frameheight, framerate">
+		<!-- 定义局部变量 -->
+		calc(local.xframes, (caller.imagewidth /framewidth) BOR 0);
+		calc(local.frames, xframes * ((caller.imageheight / frameheight) BOR 0));
+		def(local.frame, integer, 0);
+		
+		<!-- 设置第一帧 -->
+		calc(caller.crop, '0|0|' + framewidth + '|' + frameheight);
+		
+		<!-- 动画部分 -->
+		setinterval(calc('crop_anim_' + caller.name), calc(1.0 / framerate),
+			if(caller.loaded,
+				inc(frame);
+				if(frame GE frames, if(caller.onlastframe !== null, callwith(caller, onlastframe() ) ); set(frame,0); );
+				mod(xpos, frame, xframes);
+				div(ypos, frame, xframes);
+				Math.floor(ypos);
+				mul(xpos, framewidth);
+				mul(ypos, frameheight);
+				calc(caller.crop, xpos + '|' + ypos + '|' + framewidth + '|' + frameheight);
+			  ,
+				<!-- 当热点移除时停止动画 -->
+				clearinterval(calc('crop_anim_' + caller.name));
+			);
+		);
+	</action>
+
+	<!-- sound plugin -->
+<!-- 	<plugin name="soundinterface"
+			url="%SWFPATH%/plugins/soundinterface.swf"
+			alturl="%SWFPATH%/plugins/soundinterface.js"
+			rootpath="%SWFPATH%/sounds"
+			preload="true"
+			keep="true"
+			volume="0.5"
+ 	/>
+ -->
+<!--  	<events name="musicevents"
+ 			onnewpano="indexoftxt(result, get(scene[get(xml.scene)].bgmusic),mp3);
+			if(result GE 0,tween(sound[bgsnd].volume, 0.5);
+			playsound(bgs,get(scene[get(xml.scene)].bgmusic),1,tween(sound[bgsnd].volume, 1)));"
+			onremovepano="stopsound(bgsnd)"
+ 	/> -->
+
+	<!-- a button to pause/play the sound -->
+	<plugin name="snd" url="soundonoff.png" align="leftbottom" x="10" y="10" alpha="0.25" scale="0.5" onover="tween(alpha,1);" onout="tween(alpha,0.25);"
+	        crop="0|0|50|50"
+	        />
+	
+	<scene firsttime="true" name="scene_1" title="1" onstart="" havevrimage="true" thumburl="panos/1.tiles/thumb.jpg" lat="39.563340" lng="19.904324" heading="0.0">
+
+		<!-- <view hlookat="112.106" vlookat="0.114" fovtype="MFOV" fov="104.030" fovmin="70" fovmax="140" limitview="auto" /> -->
+    	<view hlookat="211.52634085734758" vlookat="5.705458445935779" fovtype="MFOV" fov="120" fovmin="60" fovmax="120" limitview="auto"/>
+
+		<preview url="panos/1.tiles/preview.jpg" />
+
+		<image type="CUBE" multires="true" tilesize="512" if="!webvr.isenabled">
+			<level tiledimagewidth="2560" tiledimageheight="2560">
+				<cube url="panos/1.tiles/%s/l3/%v/l3_%s_%v_%h.jpg"/>
+			</level>
+			<level tiledimagewidth="1280" tiledimageheight="1280">
+				<cube url="panos/1.tiles/%s/l2/%v/l2_%s_%v_%h.jpg"/>
+			</level>
+			<level tiledimagewidth="640" tiledimageheight="640">
+				<cube url="panos/1.tiles/%s/l1/%v/l1_%s_%v_%h.jpg"/>
+			</level>
+		</image>
+
+		<image if="webvr.isenabled">
+			<cube url="panos/1.tiles/vr/pano_%s.jpg" />
+		</image>
+
+		<include url="littleplanet.xml" />
+
+		<hotspot name="spot1" style="hotspot_gif_1" ath="116.479" atv="15.770" linkedscene="scene_2" />
+		<hotspot name="spot2" style="skin_hotspotstyle" ath="69.212" atv="1.205" linkedscene="scene_3" />
+	</scene>
+	<scene name="scene_2" title="2" onstart="" havevrimage="true" thumburl="panos/2.tiles/thumb.jpg" lat="" lng="" heading="">
+	    <view hlookat="-136.3554582663959" vlookat="35.87783275313946" fovtype="MFOV" fov="120" fovmin="120" fovmax="120" limitview="auto"/>
+	    <preview url="panos/2.tiles/preview.jpg"/>
+	    <image type="CUBE" multires="true" tilesize="512" if="!webvr.isenabled">
+	      <level tiledimagewidth="2560" tiledimageheight="2560">
+	        <cube url="panos/2.tiles/%s/l3/%v/l3_%s_%v_%h.jpg"/>
+	      </level>
+	      <level tiledimagewidth="1280" tiledimageheight="1280">
+	        <cube url="panos/2.tiles/%s/l2/%v/l2_%s_%v_%h.jpg"/>
+	      </level>
+	      <level tiledimagewidth="640" tiledimageheight="640">
+	        <cube url="panos/2.tiles/%s/l1/%v/l1_%s_%v_%h.jpg"/>
+	      </level>
+	    </image>
+	    <image if="webvr.isenabled">
+	      <cube url="panos/2.tiles/vr/pano_%s.jpg"/>
+	    </image>
+	    <autorotate enabled="true" waittime="4" accel="1.0" speed="5.0" horizon="0.0"/>
+	</scene>
+	<scene name="scene_3" title="3" onstart="" havevrimage="true" thumburl="panos/3.tiles/thumb.jpg" lat="" lng="" heading="">
+		<view hlookat="124.92744005303837" vlookat="5.412686394886635" fovtype="MFOV" fov="120" fovmin="70" fovmax="140" limitview="auto"/>
+		<preview url="panos/3.tiles/preview.jpg"/>
+		<image type="CUBE" multires="true" tilesize="512" if="!webvr.isenabled">
+		  <level tiledimagewidth="2560" tiledimageheight="2560">
+		    <cube url="panos/3.tiles/%s/l3/%v/l3_%s_%v_%h.jpg"/>
+		  </level>
+		  <level tiledimagewidth="1280" tiledimageheight="1280">
+		    <cube url="panos/3.tiles/%s/l2/%v/l2_%s_%v_%h.jpg"/>
+		  </level>
+		  <level tiledimagewidth="640" tiledimageheight="640">
+		    <cube url="panos/3.tiles/%s/l1/%v/l1_%s_%v_%h.jpg"/>
+		  </level>
+		</image>
+		<image if="webvr.isenabled">
+		  <cube url="panos/3.tiles/vr/pano_%s.jpg" />
+		</image>
+		<autorotate enabled="false" waittime="1.5" accel="1.0" speed="5.0" horizon="0.0"/>
+	</scene>
+
+
+
+	<scene name="scene_4" title="4" onstart="" havevrimage="true" thumburl="panos/3.tiles/thumb.jpg" lat="" lng="" heading="">
+		<view hlookat="124.92744005303837" vlookat="5.412686394886635" fovtype="MFOV" fov="120" fovmin="70" fovmax="140" limitview="auto"/>
+		<preview url="panos/3.tiles/preview.jpg"/>
+		<image type="CUBE" multires="true" tilesize="512" if="!webvr.isenabled">
+		  <level tiledimagewidth="2560" tiledimageheight="2560">
+		    <cube url="panos/3.tiles/%s/l3/%v/l3_%s_%v_%h.jpg"/>
+		  </level>
+		  <level tiledimagewidth="1280" tiledimageheight="1280">
+		    <cube url="panos/3.tiles/%s/l2/%v/l2_%s_%v_%h.jpg"/>
+		  </level>
+		  <level tiledimagewidth="640" tiledimageheight="640">
+		    <cube url="panos/3.tiles/%s/l1/%v/l1_%s_%v_%h.jpg"/>
+		  </level>
+		</image>
+		<image if="webvr.isenabled">
+		  <cube url="panos/3.tiles/vr/pano_%s.jpg" />
+		</image>
+		<autorotate enabled="false" waittime="1.5" accel="1.0" speed="5.0" horizon="0.0"/>
+	</scene>
+	<scene name="scene_5" title="5" onstart="" havevrimage="true" thumburl="panos/3.tiles/thumb.jpg" lat="" lng="" heading="">
+		<view hlookat="124.92744005303837" vlookat="5.412686394886635" fovtype="MFOV" fov="120" fovmin="70" fovmax="140" limitview="auto"/>
+		<preview url="panos/3.tiles/preview.jpg"/>
+		<image type="CUBE" multires="true" tilesize="512" if="!webvr.isenabled">
+		  <level tiledimagewidth="2560" tiledimageheight="2560">
+		    <cube url="panos/3.tiles/%s/l3/%v/l3_%s_%v_%h.jpg"/>
+		  </level>
+		  <level tiledimagewidth="1280" tiledimageheight="1280">
+		    <cube url="panos/3.tiles/%s/l2/%v/l2_%s_%v_%h.jpg"/>
+		  </level>
+		  <level tiledimagewidth="640" tiledimageheight="640">
+		    <cube url="panos/3.tiles/%s/l1/%v/l1_%s_%v_%h.jpg"/>
+		  </level>
+		</image>
+		<image if="webvr.isenabled">
+		  <cube url="panos/3.tiles/vr/pano_%s.jpg" />
+		</image>
+		<autorotate enabled="false" waittime="1.5" accel="1.0" speed="5.0" horizon="0.0"/>
+	</scene>
+	<scene name="scene_6" title="6" onstart="" havevrimage="true" thumburl="panos/3.tiles/thumb.jpg" lat="" lng="" heading="">
+		<view hlookat="124.92744005303837" vlookat="5.412686394886635" fovtype="MFOV" fov="120" fovmin="70" fovmax="140" limitview="auto"/>
+		<preview url="panos/3.tiles/preview.jpg"/>
+		<image type="CUBE" multires="true" tilesize="512" if="!webvr.isenabled">
+		  <level tiledimagewidth="2560" tiledimageheight="2560">
+		    <cube url="panos/3.tiles/%s/l3/%v/l3_%s_%v_%h.jpg"/>
+		  </level>
+		  <level tiledimagewidth="1280" tiledimageheight="1280">
+		    <cube url="panos/3.tiles/%s/l2/%v/l2_%s_%v_%h.jpg"/>
+		  </level>
+		  <level tiledimagewidth="640" tiledimageheight="640">
+		    <cube url="panos/3.tiles/%s/l1/%v/l1_%s_%v_%h.jpg"/>
+		  </level>
+		</image>
+		<image if="webvr.isenabled">
+		  <cube url="panos/3.tiles/vr/pano_%s.jpg" />
+		</image>
+		<autorotate enabled="false" waittime="1.5" accel="1.0" speed="5.0" horizon="0.0"/>
+	</scene>
+	<scene name="scene_7" title="7" onstart="" havevrimage="true" thumburl="panos/3.tiles/thumb.jpg" lat="" lng="" heading="">
+		<view hlookat="124.92744005303837" vlookat="5.412686394886635" fovtype="MFOV" fov="120" fovmin="70" fovmax="140" limitview="auto"/>
+		<preview url="panos/3.tiles/preview.jpg"/>
+		<image type="CUBE" multires="true" tilesize="512" if="!webvr.isenabled">
+		  <level tiledimagewidth="2560" tiledimageheight="2560">
+		    <cube url="panos/3.tiles/%s/l3/%v/l3_%s_%v_%h.jpg"/>
+		  </level>
+		  <level tiledimagewidth="1280" tiledimageheight="1280">
+		    <cube url="panos/3.tiles/%s/l2/%v/l2_%s_%v_%h.jpg"/>
+		  </level>
+		  <level tiledimagewidth="640" tiledimageheight="640">
+		    <cube url="panos/3.tiles/%s/l1/%v/l1_%s_%v_%h.jpg"/>
+		  </level>
+		</image>
+		<image if="webvr.isenabled">
+		  <cube url="panos/3.tiles/vr/pano_%s.jpg" />
+		</image>
+		<autorotate enabled="false" waittime="1.5" accel="1.0" speed="5.0" horizon="0.0"/>
+	</scene>
+        <action name="skin_view_look_straight">
+		if(view.vlookat LT -80 OR view.vlookat GT +80,
+			tween(view.vlookat, 0.0, 1.0, easeInOutSine);
+			tween(view.fov,     100, distance(150,0.8));
+			trace(3);
+		  );
+		
+	</action>
+
+	<action name="skin_view_normal">
+		skin_view_look_straight();
+		set(view.stereographic, true);
+		set(view.fovmax, get(xml.view.fovmax));
+		tween(view.distortionfovlink,   0.5, distance(1.0,0.5));
+		tween(view.architectural, 0.0, distance(1.0,0.5));
+		tween(view.pannini,       0.0, distance(1.0,0.5));
+		tween(view.distortion,    0.0, distance(1.0,0.5));
+	</action>
+
+	<action name="skin_view_fisheye">
+		skin_view_look_straight();
+		set(view.stereographic, true);
+		set(view.fovmax, get(xml.view.fovmax));
+		tween(view.distortionfovlink,   0.5, distance(1.0,0.5));
+		tween(view.architectural, 0.0,  distance(1.0,0.5));
+		tween(view.pannini,       0.0,  distance(1.0,0.5));
+		tween(view.distortion,    0.35, distance(1.0,0.5));
+	</action>
+
+	<action name="skin_view_architectural">
+		skin_view_look_straight();
+		set(view.stereographic, true);
+		set(view.fovmax, get(xml.view.fovmax));
+		tween(view.distortionfovlink,   0.5, distance(1.0,0.5));
+		tween(view.architectural, 1.0, distance(1.0,0.5));
+		tween(view.pannini,       0.0, distance(1.0,0.5));
+		tween(view.distortion,    0.0, distance(1.0,0.5));
+	</action>
+
+	<action name="skin_view_stereographic">
+		skin_view_look_straight();
+		set(view.stereographic, true);
+		set(view.fovmax, get(xml.view.fovmax));
+		tween(view.distortionfovlink,   0.5, distance(1.0,0.5));
+		tween(view.architectural, 0.0, distance(1.0,0.5));
+		tween(view.pannini,       0.0, distance(1.0,0.5));
+		tween(view.distortion,    1.0, distance(1.0,0.8));
+	</action>
+
+	<action name="skin_view_pannini">
+		skin_view_look_straight();
+		set(view.stereographic, true);
+		set(view.fovmax, get(xml.view.fovmax));
+		tween(view.distortionfovlink,   0.5, distance(1.0,0.5));
+		tween(view.architectural, 0.0, distance(1.0,0.5));
+		tween(view.pannini,       1.0, distance(1.0,0.8));
+		if(view.distortion LT 0.1,
+			tween(view.distortion, 1.0, distance(1.0,0.8));
+		  );
+	</action>
+
+	<action name="skin_view_littleplanet">
+	    set(view.stereographic, true);
+		set(view.fovmax, get(xml.view.fovmax));
+		tween(view.distortionfovlink,   0.5, distance(1.0,0.5));
+		tween(view.architectural, 0.0, distance(1.0,0.5));
+		tween(view.pannini,       0.0, distance(1.0,0.5));
+		tween(view.distortion,    1.0, distance(1.0,0.8));
+		tween(view.fov,           150, distance(150,0.8));
+		tween(view.vlookat,        90, distance(100,0.8));
+		add(new_hlookat, view.hlookat, 123.0);
+		tween(view.hlookat, get(new_hlookat), distance(100,0.8));
+		
+	</action>
+
+	<action name="skin_view_ball">
+		
+		set(view.stereographic, false);
+		set(view.fovmax, 180);
+		tween(view.architectural, 0.0, distance(1.0,0.5));
+		tween(view.pannini,       0.0, distance(1.0,0.5));
+		tween(view.distortionfovlink,       1.0, distance(1.0,0.5));
+		tween(view.distortion,    1.0, distance(1.0,0.8));
+		tween(view.fov,           180, distance(150,0.8));
+		tween(view.vlookat,        0, distance(100,0.8));
+		
+	</action>
+
+
+
+    <contextmenu fullscreen="false" versioninfo="false">	
+<!-- 		<item name="nv" caption="正常视角"        onclick="skin_view_normal();"        showif="view.vlookatrange == 180" separator="true"      />
+		<item name="fv" caption="鱼眼视角"       onclick="skin_view_fisheye();"       showif="view.vlookatrange == 180" devices="flash|webgl" />
+		<item name="sv" caption="球极平面视角" onclick="skin_view_stereographic();" showif="view.vlookatrange == 180" devices="flash|webgl" />
+		<item name="av" caption="建筑视角" onclick="skin_view_architectural();" showif="view.vlookatrange == 180"                       />
+		<item name="pv" caption="帕尼尼视角"       onclick="skin_view_pannini();"       showif="view.vlookatrange == 180" devices="flash|webgl" />
+		<item name="lp" caption="小行星视角" onclick="skin_view_littleplanet();"  showif="view.vlookatrange == 180" devices="flash|webgl" />
+		<item name="ba" caption="球体视角" onclick="skin_view_ball();"  showif="view.vlookatrange == 180" devices="flash|webgl" /> -->
+	</contextmenu>
+
+</krpano>
