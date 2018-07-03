@@ -40,7 +40,9 @@ function logStats (proc, data) {
 
 function startRenderer () {
   return new Promise((resolve, reject) => {
-    rendererConfig.entry.renderer = [path.join(__dirname, 'dev-client')].concat(rendererConfig.entry.renderer)
+    rendererConfig.entry.rendererIndex = [path.join(__dirname, 'dev-client')].concat(rendererConfig.entry.rendererIndex)
+    rendererConfig.entry.rendererEditor = [path.join(__dirname, 'dev-client')].concat(rendererConfig.entry.rendererEditor)
+
 
     const compiler = webpack(rendererConfig)
     hotMiddleware = webpackHotMiddleware(compiler, { 
@@ -66,6 +68,40 @@ function startRenderer () {
         quiet: true,
         before (app, ctx) {
           app.use(hotMiddleware)
+          // 路由
+
+          app.get('/', function(req, res, next) {
+              
+            var filepath = path.join(compiler.outputPath, 'index.html');
+            
+            // 使用webpack提供的outputFileSystem
+            compiler.outputFileSystem.readFile(filepath, function(err, result) {
+                if (err) {
+                    // something error
+                    return next(err);
+                }
+                res.set('content-type', 'text/html');
+                res.send(result);
+                res.end();
+            });
+          });
+
+          app.get('/editor', function(req, res, next) {
+              
+            var filepath = path.join(compiler.outputPath, 'editor.html');
+            
+            // 使用webpack提供的outputFileSystem
+            compiler.outputFileSystem.readFile(filepath, function(err, result) {
+                if (err) {
+                    // something error
+                    return next(err);
+                }
+                res.set('content-type', 'text/html');
+                res.send(result);
+                res.end();
+            });
+          });
+
           ctx.middleware.waitUntilValid(() => {
             resolve()
           })

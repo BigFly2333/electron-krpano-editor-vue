@@ -1,0 +1,69 @@
+   <!-- 检查是否为首次进入，如果是，则执行小行星视图-->  
+<krpano onstart="if(scene[0].firsttime,
+                  set(layer[skin_scroll_window].visible,false);
+                  set(layer[skin_scroll_window].alpha,0);
+                  set(layer[skin_control_bar].visible,false);
+                  set(layer[skin_scroll_window].alpha,0);
+                  set(layer[skin_splitter_bottom].visible, false);
+                  set(layer[skin_splitter_bottom],alpha,0);
+                  get_startactions();
+                  set_hotspot_visible(false);
+                  littleplanetview();
+                  set(scene[0].firsttime,false));
+                 ">
+  
+  <!-- 初始视域值设置 -->
+  <init_setting lp_hlookat="112.106"
+                lp_vlookat="0.114"
+                lp_fov="104.030"
+                lp_distortion="0"
+  />
+
+    <!-- 检查是否设置startactions，如果有则获取参数中的视域值，更改初始视域值 -->
+  <action name="get_startactions">
+    if(startactions !== null AND startactions !== '',
+      indexoftxt(lookatindex,get(startactions),';');
+      subtxt(lookattxt, get(startactions), 7, calc(lookatindex - 8));
+      txtsplit(get(lookattxt), ',', lookatarr);
+      set(init_setting.lp_hlookat, get(lookatarr[0].value));
+      set(init_setting.lp_vlookat, get(lookatarr[1].value));
+      set(init_setting.lp_fov, get(lookatarr[2].value));
+      set(init_setting.lp_distortion, get(lookatarr[3].value));
+      );
+  </action>
+
+     <!-- 小行星视图-->  
+  <action name="littleplanetview">
+        set(view.stereographic,true);
+        set(view.fisheye,1.0); 
+        set(view.fov,155); 
+        set(view.fovtype,VFOV); 
+        set(view.fovmax,150); 
+        set(view.hlookat,-60); 
+        set(view.vlookat,77); 
+  </action>
+ 
+     <!-- 设置热点可见性-->  
+  <action name="set_hotspot_visible">
+          for(set(i,0),i LT hotspot.count,inc(i),
+               set(hotspot[get(i)].visible,%1);
+                );
+  </action>
+  
+    <!-- 检查是否在切换视图期间是否转到其它场景-->  
+  <events onloadcomplete="if(view.fisheye == 1,delayedcall(lp_1,1.0, normalview()));" 
+          onremovepano="ifnot(view.fisheye == 0,stopdelayedcall(lp_1));" 
+          name="littleplanet"  
+          keep="false" />  
+  
+    <!-- 小行星持续2秒后切换至正常视场-->  
+  <action name="normalview">  
+        tween(view.hlookat|view.vlookat|view.fov|view.distortion, calc('' + init_setting.lp_hlookat + '|' + init_setting.lp_vlookat + '|' + init_setting.lp_fov + '|' + init_setting.lp_distortion),2.5, easeOutQuad);
+        wait(2.7);    
+        set_hotspot_visible(true);
+        set(layer[skin_scroll_window].visible,true);tween(layer[skin_scroll_window].alpha,1,1);
+        set(layer[skin_control_bar].visible,true);tween(layer[skin_control_bar].alpha,1,1);
+        set(layer[skin_splitter_bottom].visible,true);tween(layer[skin_splitter_bottom].alpha,1,1);
+  </action>  
+ 
+</krpano>

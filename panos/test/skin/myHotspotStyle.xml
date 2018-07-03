@@ -1,0 +1,15 @@
+<krpano>
+	
+	<style name="hotspot_gif_1"
+		url="hotspots/new_spotd1_gif.png"
+		scale="0.5"
+		zoom="true"
+		distorted="true"
+		onloaded="do_crop_animation(128,128,20);add_all_the_time_tooltip();" 
+		tooltip=""
+		linkedscence=""
+		linkedscene_lookat=""
+		onclick="if(linkedscene, skin_hidetooltips(); tween(scale,0.25,0.5); tween(oy,20,0.5); tween(alpha,0,0.5); looktohotspot(); loadscene(get(linkedscene),null,get(skin_settings.loadscene_flags),get(skin_settings.loadscene_blend)); skin_updatescroll(); );"
+	/>
+
+</krpano>

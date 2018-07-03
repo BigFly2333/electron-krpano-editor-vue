@@ -12,11 +12,7 @@ if (process.env.NODE_ENV !== 'development') {
 
 let mainWindow
 
-const winURL = process.env.NODE_ENV === 'development'
-  ? `file:///Users/bigfly/Documents/code/my/krpano-editor/dist/electron/index.html`
-  : `file://${__dirname}/index.html`
-
-function createWindow () {
+function createWindow (winURL) {
   /**
    * Initial window options
    */
@@ -26,28 +22,35 @@ function createWindow () {
     width: 1440
   })
   mainWindow.loadURL(winURL)
-  // mainWindow.loadURL('file:///Users/bigfly/Documents/code/my/krpano-editor/dist/electron/index.html')
+  // mainWindow.webContents.openDevTools()
 
   mainWindow.on('closed', () => {
     mainWindow = null
   })
 }
 
-app.on('ready', createWindow)
+app.on('ready', () => {
+  const winURL = process.env.NODE_ENV === 'development'
+    ? `http://localhost:9080/editor`
+    : `file://${__dirname}/index.html`
 
-ipcMain.on('url', (evt, data) => {
-  console.log(data)
-  let krpanoWindow = new BrowserWindow({
-    height: 1000,
-    useContentSize: true,
-    width: 1440
-  })
+  createWindow(winURL)
+})
 
-  krpanoWindow.loadURL(`file://${data[0]}`)
-  // krpanoWindow.loadURL('file:///Users/bigfly/Desktop/%E6%9F%A5%E5%85%8B%E6%8B%89%E5%B0%81%E5%8D%B0%E5%BA%93/test.html')
+ipcMain.on('localPanoPath', (event, path) => {
+  console.log(path)
 
-  krpanoWindow.on('closed', () => {
-    krpanoWindow = null
+  const winURL = process.env.NODE_ENV === 'development'
+    ? `http://localhost:9080/editor`
+    : `file://${__dirname}/editor.html`
+
+  createWindow(winURL)
+  const contents = mainWindow.webContents
+
+  // mainWindow.webContents.openDevTools()
+
+  contents.on('did-finish-load', () => {
+    contents.send('openXml', path)
   })
 })
 

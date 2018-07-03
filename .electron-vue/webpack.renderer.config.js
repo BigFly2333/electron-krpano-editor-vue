@@ -23,7 +23,8 @@ let whiteListedModules = ['vue']
 let rendererConfig = {
   devtool: '#cheap-module-eval-source-map',
   entry: {
-    renderer: path.join(__dirname, '../src/renderer/main.js')
+    rendererIndex: path.join(__dirname, '../src/renderer/index/main.js'),
+    rendererEditor: path.join(__dirname, '../src/renderer/editor/editor_main.js')
   },
   externals: [
     ...Object.keys(dependencies || {}).filter(d => !whiteListedModules.includes(d))
@@ -113,6 +114,20 @@ let rendererConfig = {
     new HtmlWebpackPlugin({
       filename: 'index.html',
       template: path.resolve(__dirname, '../src/index.ejs'),
+      chunks: ['rendererIndex'],
+      minify: {
+        collapseWhitespace: true,
+        removeAttributeQuotes: true,
+        removeComments: true
+      },
+      nodeModules: process.env.NODE_ENV !== 'production'
+        ? path.resolve(__dirname, '../node_modules')
+        : false
+    }),
+    new HtmlWebpackPlugin({
+      filename: 'editor.html',
+      template: path.resolve(__dirname, '../src/editor.ejs'),
+      chunks: ['rendererEditor'],
       minify: {
         collapseWhitespace: true,
         removeAttributeQuotes: true,
@@ -133,6 +148,7 @@ let rendererConfig = {
   resolve: {
     alias: {
       '@': path.join(__dirname, '../src/renderer'),
+      'staric@': path.join(__dirname, '../static'),
       'vue$': 'vue/dist/vue.esm.js'
     },
     extensions: ['.js', '.vue', '.json', '.css', '.node']
@@ -164,6 +180,10 @@ if (process.env.NODE_ENV === 'production') {
         from: path.join(__dirname, '../static'),
         to: path.join(__dirname, '../dist/electron/static'),
         ignore: ['.*']
+      },
+      {
+        from: path.join(__dirname, '../static/krpano.xml'),
+        to: path.join(__dirname, '../dist/electron')
       }
     ]),
     new webpack.DefinePlugin({
