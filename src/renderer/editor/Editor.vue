@@ -43,7 +43,8 @@
       },
       panoInit () {
         const krpano = this.krpano
-        krpano.call('skin_hideskin("instant")')
+        // 隐藏下方自带控制条
+        krpano.call('set(layer[skin_layer].visible, false);')
       }
     },
     mounted () {
