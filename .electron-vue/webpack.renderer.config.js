@@ -43,10 +43,17 @@ let rendererConfig = {
         }
       },
       {
-        test: /\.css$/,
+        test: /\.(css)$/,
         use: ExtractTextPlugin.extract({
           fallback: 'style-loader',
           use: 'css-loader'
+        })
+      },
+      {
+        test: /\.(scss|sass)$/,
+        use: ExtractTextPlugin.extract({
+          fallback: 'style-loader',
+          use: ['css-loader', 'sass-loader']
         })
       },
       {
@@ -149,6 +156,7 @@ let rendererConfig = {
     alias: {
       '@': path.join(__dirname, '../src/renderer'),
       'staric@': path.join(__dirname, '../static'),
+      'public@': path.join(__dirname, '../src/public'),
       'vue$': 'vue/dist/vue.esm.js'
     },
     extensions: ['.js', '.vue', '.json', '.css', '.node']

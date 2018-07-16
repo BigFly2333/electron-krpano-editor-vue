@@ -73,7 +73,7 @@
 		horizon="0.0"
 	/>
 
-	<events name="onautorotateevents" keep="true" onautorotateoneround="nextscene()"/>
+	<!-- <events name="onautorotateevents" keep="true" onautorotateoneround="nextscene()"/> -->
 
 	<action name="nextscene">
 		autorotate.stop();wait(0);
@@ -210,9 +210,47 @@
 		<autorotate enabled="false" waittime="1.5" accel="1.0" speed="5.0" horizon="0.0"/>
 	</scene>
 
+  	<!-- <scene name="scene_4" title="4" onstart="" havevrimage="true" thumburl="panos/3.tiles/thumb.jpg" lat="" lng="" heading="">
+		<view hlookat="124.92744005303837" vlookat="5.412686394886635" fovtype="MFOV" fov="120" fovmin="70" fovmax="140" limitview="auto"/>
+		<preview url="panos/3.tiles/preview.jpg"/>
+		<image type="CUBE" multires="true" tilesize="512" if="!webvr.isenabled">
+		  <level tiledimagewidth="2560" tiledimageheight="2560">
+		    <cube url="panos/3.tiles/%s/l3/%v/l3_%s_%v_%h.jpg"/>
+		  </level>
+		  <level tiledimagewidth="1280" tiledimageheight="1280">
+		    <cube url="panos/3.tiles/%s/l2/%v/l2_%s_%v_%h.jpg"/>
+		  </level>
+		  <level tiledimagewidth="640" tiledimageheight="640">
+		    <cube url="panos/3.tiles/%s/l1/%v/l1_%s_%v_%h.jpg"/>
+		  </level>
+		</image>
+		<image if="webvr.isenabled">
+		  <cube url="panos/3.tiles/vr/pano_%s.jpg" />
+		</image>
+		<autorotate enabled="false" waittime="1.5" accel="1.0" speed="5.0" horizon="0.0"/>
+	</scene>
 
+  	<scene name="scene_5" title="5" onstart="" havevrimage="true" thumburl="panos/3.tiles/thumb.jpg" lat="" lng="" heading="">
+		<view hlookat="124.92744005303837" vlookat="5.412686394886635" fovtype="MFOV" fov="120" fovmin="70" fovmax="140" limitview="auto"/>
+		<preview url="panos/3.tiles/preview.jpg"/>
+		<image type="CUBE" multires="true" tilesize="512" if="!webvr.isenabled">
+		  <level tiledimagewidth="2560" tiledimageheight="2560">
+		    <cube url="panos/3.tiles/%s/l3/%v/l3_%s_%v_%h.jpg"/>
+		  </level>
+		  <level tiledimagewidth="1280" tiledimageheight="1280">
+		    <cube url="panos/3.tiles/%s/l2/%v/l2_%s_%v_%h.jpg"/>
+		  </level>
+		  <level tiledimagewidth="640" tiledimageheight="640">
+		    <cube url="panos/3.tiles/%s/l1/%v/l1_%s_%v_%h.jpg"/>
+		  </level>
+		</image>
+		<image if="webvr.isenabled">
+		  <cube url="panos/3.tiles/vr/pano_%s.jpg" />
+		</image>
+		<autorotate enabled="false" waittime="1.5" accel="1.0" speed="5.0" horizon="0.0"/>
+	</scene>
 
-	<scene name="scene_4" title="4" onstart="" havevrimage="true" thumburl="panos/3.tiles/thumb.jpg" lat="" lng="" heading="">
+  	<scene name="scene_6" title="6" onstart="" havevrimage="true" thumburl="panos/3.tiles/thumb.jpg" lat="" lng="" heading="">
 		<view hlookat="124.92744005303837" vlookat="5.412686394886635" fovtype="MFOV" fov="120" fovmin="70" fovmax="140" limitview="auto"/>
 		<preview url="panos/3.tiles/preview.jpg"/>
 		<image type="CUBE" multires="true" tilesize="512" if="!webvr.isenabled">
@@ -230,65 +268,8 @@
 		  <cube url="panos/3.tiles/vr/pano_%s.jpg" />
 		</image>
 		<autorotate enabled="false" waittime="1.5" accel="1.0" speed="5.0" horizon="0.0"/>
-	</scene>
-	<scene name="scene_5" title="5" onstart="" havevrimage="true" thumburl="panos/3.tiles/thumb.jpg" lat="" lng="" heading="">
-		<view hlookat="124.92744005303837" vlookat="5.412686394886635" fovtype="MFOV" fov="120" fovmin="70" fovmax="140" limitview="auto"/>
-		<preview url="panos/3.tiles/preview.jpg"/>
-		<image type="CUBE" multires="true" tilesize="512" if="!webvr.isenabled">
-		  <level tiledimagewidth="2560" tiledimageheight="2560">
-		    <cube url="panos/3.tiles/%s/l3/%v/l3_%s_%v_%h.jpg"/>
-		  </level>
-		  <level tiledimagewidth="1280" tiledimageheight="1280">
-		    <cube url="panos/3.tiles/%s/l2/%v/l2_%s_%v_%h.jpg"/>
-		  </level>
-		  <level tiledimagewidth="640" tiledimageheight="640">
-		    <cube url="panos/3.tiles/%s/l1/%v/l1_%s_%v_%h.jpg"/>
-		  </level>
-		</image>
-		<image if="webvr.isenabled">
-		  <cube url="panos/3.tiles/vr/pano_%s.jpg" />
-		</image>
-		<autorotate enabled="false" waittime="1.5" accel="1.0" speed="5.0" horizon="0.0"/>
-	</scene>
-	<scene name="scene_6" title="6" onstart="" havevrimage="true" thumburl="panos/3.tiles/thumb.jpg" lat="" lng="" heading="">
-		<view hlookat="124.92744005303837" vlookat="5.412686394886635" fovtype="MFOV" fov="120" fovmin="70" fovmax="140" limitview="auto"/>
-		<preview url="panos/3.tiles/preview.jpg"/>
-		<image type="CUBE" multires="true" tilesize="512" if="!webvr.isenabled">
-		  <level tiledimagewidth="2560" tiledimageheight="2560">
-		    <cube url="panos/3.tiles/%s/l3/%v/l3_%s_%v_%h.jpg"/>
-		  </level>
-		  <level tiledimagewidth="1280" tiledimageheight="1280">
-		    <cube url="panos/3.tiles/%s/l2/%v/l2_%s_%v_%h.jpg"/>
-		  </level>
-		  <level tiledimagewidth="640" tiledimageheight="640">
-		    <cube url="panos/3.tiles/%s/l1/%v/l1_%s_%v_%h.jpg"/>
-		  </level>
-		</image>
-		<image if="webvr.isenabled">
-		  <cube url="panos/3.tiles/vr/pano_%s.jpg" />
-		</image>
-		<autorotate enabled="false" waittime="1.5" accel="1.0" speed="5.0" horizon="0.0"/>
-	</scene>
-	<scene name="scene_7" title="7" onstart="" havevrimage="true" thumburl="panos/3.tiles/thumb.jpg" lat="" lng="" heading="">
-		<view hlookat="124.92744005303837" vlookat="5.412686394886635" fovtype="MFOV" fov="120" fovmin="70" fovmax="140" limitview="auto"/>
-		<preview url="panos/3.tiles/preview.jpg"/>
-		<image type="CUBE" multires="true" tilesize="512" if="!webvr.isenabled">
-		  <level tiledimagewidth="2560" tiledimageheight="2560">
-		    <cube url="panos/3.tiles/%s/l3/%v/l3_%s_%v_%h.jpg"/>
-		  </level>
-		  <level tiledimagewidth="1280" tiledimageheight="1280">
-		    <cube url="panos/3.tiles/%s/l2/%v/l2_%s_%v_%h.jpg"/>
-		  </level>
-		  <level tiledimagewidth="640" tiledimageheight="640">
-		    <cube url="panos/3.tiles/%s/l1/%v/l1_%s_%v_%h.jpg"/>
-		  </level>
-		</image>
-		<image if="webvr.isenabled">
-		  <cube url="panos/3.tiles/vr/pano_%s.jpg" />
-		</image>
-		<autorotate enabled="false" waittime="1.5" accel="1.0" speed="5.0" horizon="0.0"/>
-	</scene>
-        <action name="skin_view_look_straight">
+	</scene> -->
+  <action name="skin_view_look_straight">
 		if(view.vlookat LT -80 OR view.vlookat GT +80,
 			tween(view.vlookat, 0.0, 1.0, easeInOutSine);
 			tween(view.fov,     100, distance(150,0.8));

@@ -18,8 +18,10 @@ function createWindow (winURL) {
    */
   mainWindow = new BrowserWindow({
     height: 1000,
-    useContentSize: true,
-    width: 1440
+    width: 1440,
+    minWidth: 1200,
+    minHeight: 800,
+    useContentSize: true
   })
   mainWindow.loadURL(winURL)
   // mainWindow.webContents.openDevTools()

@@ -32,6 +32,9 @@
       }
   
       body {
+        position: relative;
+        min-width: 1200px;
+        overflow: auto;
         height: 100%;
         margin: 0;
         padding: 0;
@@ -55,26 +58,30 @@
         </table>
       </noscript>
       <script>
-        // const { ipcRenderer } = require('electron')
-        // let krpano = null
 
-        // embedpano({
-        //   xml: "panos/test/tour.xml",
-        //   swf: "panos/test/tour.swf",
-        //   target: "pano",
-        //   html5: "auto",
-        //   mobilescale: 1.0,
-        //   passQueryParameters: true,
-        //   onready: krpano_onready_callback
-        // })
+        embedpano({
+          xml: '/panos/test/tour.xml',
+          swf: '/panos/test/tour.swf',
+          target: 'pano',
+          html5: 'auto',
+          mobilescale: 1.0,
+          passQueryParameters: true
+        })
 
-        // function krpano_onready_callback (krpano_interface) {
-        //   krpano = krpano_interface
-        //   ipcRenderer.on('openXml', (event, path) => {
-        //     console.log(path)
-        //     krpano.call("loadpano(File://" + path + ", null, MERGE, BLEND(0.5));")
-        //   })
-        // }
+        // 一个隐藏的input元素，用来监听赋值scene变化，并手动触发onchange事件，将数据发布出去
+        function sceneListener (activeScene) {
+          var myEvent = new Event('onchange')
+          var dom_input = document.getElementById('sceneId')
+          dom_input.value = activeScene
+
+          function fun (event) {
+            event.preventDefault()
+          }
+
+          dom_input.addEventListener('onchange', fun, false)
+          dom_input.dispatchEvent(myEvent)
+          dom_input.removeEventListener('onchange', fun, false)
+        }
       </script>
     </div>
     <script>
